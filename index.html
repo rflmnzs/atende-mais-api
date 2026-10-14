@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Encontre unidades da rede SUS em Diadema, consulte serviços e veja a distância até você.">
+    <meta name="theme-color" content="#08755b">
+    <title>Atende+ | Atendimento perto de você</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/global.css">
+</head>
+<body>
+    <a class="pular-conteudo" href="#conteudo-principal">Ir para o conteúdo</a>
+
+    <header class="cabecalho">
+        <div class="conteudo-largura cabecalho-conteudo">
+            <div class="identidade">
+                <a class="marca" href="./" aria-label="Atende+, página inicial">Atende<span>+</span></a>
+                <span class="marca-descricao">Orientação sobre a rede SUS</span>
+            </div>
+            <span class="localidade">
+                <svg class="icone" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z" />
+                    <circle cx="12" cy="10" r="2.5" />
+                </svg>
+                Diadema
+            </span>
+        </div>
+    </header>
+
+    <main id="conteudo-principal" class="conteudo-largura" tabindex="-1">
+        <section class="apresentacao" aria-labelledby="titulo-principal">
+            <div class="apresentacao-texto">
+                <p class="destaque">Sua saúde, mais perto</p>
+                <h1 id="titulo-principal">Encontre atendimento perto de você.</h1>
+                <p class="apresentacao-descricao">Consulte as unidades de saúde de Diadema, os serviços disponíveis e o tempo para chegar.</p>
+            </div>
+
+            <div class="busca-acao">
+                <button id="buscar-unidades" type="button" aria-controls="resultado-container">
+                    <svg class="icone" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <circle cx="12" cy="12" r="7" />
+                        <circle cx="12" cy="12" r="2.5" />
+                        <path d="M12 2v3m0 14v3M2 12h3m14 0h3" />
+                    </svg>
+                    <span id="buscar-texto">Encontrar unidades próximas</span>
+                </button>
+                <p class="busca-ajuda">Permita o acesso à localização no navegador.</p>
+
+                <div id="loading" class="loading" role="status" hidden>
+                    <span class="spinner" aria-hidden="true"></span>
+                    <span id="loading-texto">A carregar localização e unidades...</span>
+                </div>
+                <p id="mensagem-status" class="mensagem-status" role="status" aria-live="polite" aria-atomic="true"></p>
+            </div>
+        </section>
+
+        <section class="resultados" aria-labelledby="titulo-resultados">
+            <div class="resultados-cabecalho">
+                <h2 id="titulo-resultados">Unidades de saúde</h2>
+                <p id="resumo-resultados">Busque pela sua localização</p>
+            </div>
+
+            <div class="filtros-servico" role="group" aria-labelledby="titulo-filtros">
+                <p id="titulo-filtros">Filtrar por serviço</p>
+                <div class="filtros-lista">
+                    <button class="filtro ativo" type="button" data-servico="" aria-pressed="true" aria-controls="resultado-container">Todos</button>
+                    <button class="filtro" type="button" data-servico="PEDIATRIA" aria-pressed="false" aria-controls="resultado-container">Pediatria</button>
+                    <button class="filtro" type="button" data-servico="ODONTOLOGIA" aria-pressed="false" aria-controls="resultado-container">Odontologia</button>
+                    <button class="filtro" type="button" data-servico="FARMACIA" aria-pressed="false" aria-controls="resultado-container">Farmácia</button>
+                    <button class="filtro" type="button" data-servico="EMERGENCIA" aria-pressed="false" aria-controls="resultado-container">Emergência</button>
+                </div>
+            </div>
+
+            <div id="resultado-container" class="resultado-container" aria-busy="false"></div>
+
+            <div id="estado-vazio" class="estado-vazio">
+                <span class="estado-icone" aria-hidden="true">
+                    <svg class="icone" viewBox="0 0 24 24" focusable="false">
+                        <path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Zm6-3v15m6-12v15" />
+                    </svg>
+                </span>
+                <h3 id="estado-titulo">Seu próximo atendimento começa aqui</h3>
+                <p id="estado-descricao">Use o botão acima para encontrar unidades próximas e comparar os serviços disponíveis.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="rodape conteudo-largura">
+        <p>Atende+ <span aria-hidden="true">·</span> Orientação sobre a rede SUS em Diadema</p>
+    </footer>
+
+    <script type="module" src="assets/js/api-client.js"></script>
+    <script type="module" src="assets/js/geolocation.js"></script>
+</body>
+</html>
