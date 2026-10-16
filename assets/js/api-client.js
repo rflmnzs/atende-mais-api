@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8080/api/recomendacoes";
+const API_URL = "https://atende-mais-api-production.up.railway.app/api/recomendacoes";
 
 export class ApiClient {
     async buscarRecomendacoes(lat, lng, servico = "") {
