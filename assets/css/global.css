@@ -34,6 +34,17 @@ body {
     line-height: 1.5;
 }
 
+.banner-aviso {
+    z-index: 1000;
+    padding: 0.75rem 1rem;
+    color: #856404;
+    background: #fff3cd;
+    font-family: inherit;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    text-align: center;
+}
+
 [hidden] {
     display: none !important;
 }
@@ -100,7 +111,7 @@ button:disabled {
 
 .pular-conteudo {
     position: fixed;
-    z-index: 10;
+    z-index: 1001;
     top: 0.75rem;
     left: 1rem;
     padding: 0.75rem 1rem;
@@ -242,6 +253,15 @@ h1 {
 
 .mensagem-status.erro {
     color: var(--cor-erro);
+}
+
+.mensagem-status.aviso {
+    padding: 0.65rem 0.8rem;
+    border: 1px solid #e6d193;
+    border-radius: 0.65rem;
+    color: #594400;
+    background: #fff6d9;
+    line-height: 1.5;
 }
 
 .loading {

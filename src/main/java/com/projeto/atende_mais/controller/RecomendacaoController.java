@@ -4,7 +4,6 @@ import com.projeto.atende_mais.dto.RecomendacaoResponseDTO;
 import com.projeto.atende_mais.repository.UnidadeRepository;
 import com.projeto.atende_mais.service.RecomendacaoService;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,8 +14,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/recomendacoes")
-@CrossOrigin(origins = "*")
-
 public class RecomendacaoController {
 
     private static final double VELOCIDADE_MEDIA_KMH = 20.0;

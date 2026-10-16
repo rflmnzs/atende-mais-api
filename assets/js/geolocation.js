@@ -12,12 +12,14 @@ const estadoVazio = document.querySelector("#estado-vazio");
 const estadoTitulo = document.querySelector("#estado-titulo");
 const estadoDescricao = document.querySelector("#estado-descricao");
 const apiClient = new ApiClient();
+const CONSULTA_GUARDADA_KEY = "atende-plus:ultima-consulta:v1";
 
 let unidadesEncontradas = null;
 let servicoSelecionado = "";
 let carregando = false;
 let falaAtual = null;
 let botaoEmLeitura = null;
+let consultaGuardadaEmUso = null;
 
 const nomesServicos = new Map([
     ["CLINICA_GERAL", "Clínica Geral"],
@@ -32,6 +34,11 @@ const nomesServicos = new Map([
 botaoBuscar.addEventListener("click", buscarUnidades);
 botoesFiltro.forEach((botao) => botao.addEventListener("click", selecionarFiltro));
 window.addEventListener("pagehide", pararLeitura);
+
+if (!navigator.onLine && !restaurarConsulta()) {
+    mostrarEstado("Sem ligação e sem consulta guardada", "Abra a aplicação com internet e faça uma busca para guardar unidades neste telemóvel.");
+    resumoResultados.textContent = "Sem dados guardados";
+}
 
 function normalizarCodigo(texto) {
     return String(texto ?? "")
@@ -94,10 +101,22 @@ async function buscarUnidades() {
     if (carregando) return;
     pararLeitura();
     unidadesEncontradas = null;
+    consultaGuardadaEmUso = null;
     resultadoContainer.replaceChildren();
     exibirMensagem("");
     estadoVazio.hidden = true;
     resumoResultados.textContent = "Buscando unidades próximas";
+
+    if (!navigator.onLine) {
+        if (!restaurarConsulta()) {
+            const mensagem = "Sem ligação. Faça uma busca com internet para guardar unidades neste telemóvel.";
+            mostrarEstado("Sem ligação e sem consulta guardada", mensagem);
+            resumoResultados.textContent = "Sem dados guardados";
+            exibirMensagem(mensagem, true);
+        }
+        return;
+    }
+
     definirCarregamento(true, "Obtendo sua localização…");
 
     try {
@@ -114,12 +133,15 @@ async function buscarUnidades() {
         }
 
         unidadesEncontradas = unidades;
+        salvarConsulta(unidades);
         renderizarRecomendacoes();
     } catch (erro) {
-        const mensagem = mensagemDeErro(erro);
-        mostrarEstado("Não foi possível concluir a busca", mensagem);
-        resumoResultados.textContent = "Busca não concluída";
-        exibirMensagem(mensagem, true);
+        if (!restaurarConsulta()) {
+            const mensagem = mensagemDeErro(erro);
+            mostrarEstado("Não foi possível concluir a busca", mensagem);
+            resumoResultados.textContent = "Busca não concluída";
+            exibirMensagem(mensagem, true);
+        }
     } finally {
         await aguardarRenderizacao();
         definirCarregamento(false);
@@ -149,6 +171,44 @@ function mensagemDeErro(erro) {
     }
 }
 
+function salvarConsulta(unidades) {
+    try {
+        localStorage.setItem(CONSULTA_GUARDADA_KEY, JSON.stringify({
+            versao: 1,
+            consultadoEm: Date.now(),
+            unidades
+        }));
+    } catch {
+        // A consulta online continua mesmo se o armazenamento estiver indisponível.
+    }
+}
+
+function restaurarConsulta() {
+    try {
+        const dados = JSON.parse(localStorage.getItem(CONSULTA_GUARDADA_KEY));
+        if (dados?.versao !== 1 || !Number.isFinite(dados.consultadoEm) ||
+                !Array.isArray(dados.unidades) ||
+                dados.unidades.some((unidade) => !unidade || typeof unidade !== "object" || Array.isArray(unidade))) {
+            return false;
+        }
+
+        consultaGuardadaEmUso = dados.consultadoEm;
+        unidadesEncontradas = dados.unidades;
+        renderizarRecomendacoes();
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+function avisoConsultaGuardada() {
+    const data = new Date(consultaGuardadaEmUso).toLocaleString("pt-BR", {
+        dateStyle: "short",
+        timeStyle: "short"
+    });
+    return `Consulta guardada em ${data}. Distâncias e tempos referem-se à localização daquela consulta.`;
+}
+
 function renderizarRecomendacoes() {
     pararLeitura();
     const unidades = filtrarUnidades(unidadesEncontradas ?? [], servicoSelecionado);
@@ -160,12 +220,20 @@ function renderizarRecomendacoes() {
     const quantidade = `${unidades.length} ${unidades.length === 1 ? "unidade encontrada" : "unidades encontradas"}`;
     const categoria = servicoSelecionado ? formatarNomeServico(servicoSelecionado) : "Todos os serviços";
     resumoResultados.textContent = `${quantidade} · ${categoria}`;
-    exibirMensagem(`${quantidade}. ${categoria}.`);
+    exibirMensagem(
+        consultaGuardadaEmUso === null
+            ? `${quantidade}. ${categoria}.`
+            : avisoConsultaGuardada(),
+        false,
+        consultaGuardadaEmUso !== null
+    );
 
     if (unidades.length === 0) {
         const descricao = servicoSelecionado
             ? `Não encontramos unidades com ${formatarNomeServico(servicoSelecionado)} nesta busca. Escolha outro serviço ou selecione Todos.`
-            : "Nenhuma unidade ativa foi encontrada. Tente buscar novamente mais tarde.";
+            : consultaGuardadaEmUso === null
+                ? "Nenhuma unidade ativa foi encontrada. Tente buscar novamente mais tarde."
+                : "Nenhuma unidade estava listada na última consulta guardada. Atualize quando tiver internet.";
         mostrarEstado("Nenhuma unidade encontrada", descricao);
     }
 }
@@ -359,9 +427,10 @@ function definirCarregamento(ativo, mensagem = "") {
     resultadoContainer.setAttribute("aria-busy", String(ativo));
 }
 
-function exibirMensagem(texto, erro = false) {
+function exibirMensagem(texto, erro = false, aviso = false) {
     mensagemStatus.textContent = texto;
     mensagemStatus.classList.toggle("erro", erro);
+    mensagemStatus.classList.toggle("aviso", aviso);
 }
 
 function mostrarEstado(titulo, descricao) {
