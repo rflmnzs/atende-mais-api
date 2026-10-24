@@ -156,7 +156,7 @@ function obterLocalizacao() {
         }
         navigator.geolocation.getCurrentPosition(resolve, reject, {
             enableHighAccuracy: true,
-            timeout: 10000,
+            timeout: 15000,
             maximumAge: 60000
         });
     });
