@@ -2,15 +2,14 @@ package com.projeto.atende_mais.service;
 
 import com.projeto.atende_mais.dto.RecomendacaoResponseDTO;
 import com.projeto.atende_mais.dto.EquipeAtivaDTO;
-import com.projeto.atende_mais.model.Espera;
 import com.projeto.atende_mais.model.Servico;
 import com.projeto.atende_mais.model.Unidade;
-import com.projeto.atende_mais.repository.EsperaRepository;
 import com.projeto.atende_mais.repository.ServicoRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
+import java.util.Set;
 
 @Service
 public class RecomendacaoService {
@@ -18,12 +17,9 @@ public class RecomendacaoService {
     private static final double RAIO_TERRA_KM = 6371.0;
     private static final double FATOR_ROTA_URBANA = 1.3;
 
-    private final EsperaRepository esperaRepository;
     private final ServicoRepository servicoRepository;
 
-    public RecomendacaoService(EsperaRepository esperaRepository,
-                               ServicoRepository servicoRepository) {
-        this.esperaRepository = esperaRepository;
+    public RecomendacaoService(ServicoRepository servicoRepository) {
         this.servicoRepository = servicoRepository;
     }
 
@@ -48,8 +44,8 @@ public class RecomendacaoService {
                 unidade.getTipo(),
                 distanciaKm,
                 tempoEstimadoMinutos,
-                buscarNivelFilaAtual(unidade.getId()),
-                buscarServicosDisponiveis(unidade.getId()),
+                estimarNivelFila(unidade),
+                buscarServicosDisponiveis(unidade),
                 estimarEsperaAtendimento(unidade),
                 estimarEquipeAtiva(unidade)
         );
@@ -66,6 +62,17 @@ public class RecomendacaoService {
             case UPA -> 30 + variacao * 2;
             case HOSPITAL -> 45 + variacao * 2;
         };
+    }
+
+    private String estimarNivelFila(Unidade unidade) {
+        int espera = estimarEsperaAtendimento(unidade);
+        if (espera <= 25) {
+            return "BAIXO";
+        }
+        if (espera <= 50) {
+            return "MEDIO";
+        }
+        return "ALTO";
     }
 
     /** Valores demonstrativos apenas para tornar a capacidade da unidade compreensível. */
@@ -111,16 +118,36 @@ public class RecomendacaoService {
         return (int) Math.ceil(tempoMinutos);
     }
 
-    private String buscarNivelFilaAtual(String unidadeId) {
-        return esperaRepository.findTopByUnidadeIdOrderByMedidoEmDesc(unidadeId)
-                .map(Espera::getNivel)
-                .map(nivel -> nivel.name().toUpperCase(Locale.ROOT))
-                .orElse("DESCONHECIDO");
+    private List<String> buscarServicosDisponiveis(Unidade unidade) {
+        Set<String> servicos = new LinkedHashSet<>(servicoRepository.findByUnidadeId(unidade.getId()).stream()
+                .map(Servico::getCodigo)
+                .toList());
+        servicos.addAll(servicosDemonstrativos(unidade.getTipo()));
+        return List.copyOf(servicos);
     }
 
-    private List<String> buscarServicosDisponiveis(String unidadeId) {
-        return servicoRepository.findByUnidadeId(unidadeId).stream()
-                .map(Servico::getCodigo)
-                .toList();
+    private List<String> servicosDemonstrativos(Unidade.Tipo tipo) {
+        return switch (tipo) {
+            case UBS -> List.of(
+                    "ATENCAO_BASICA",
+                    "CLINICA_GERAL",
+                    "PEDIATRIA",
+                    "ODONTOLOGIA",
+                    "FARMACIA",
+                    "VACINACAO"
+            );
+            case UPA -> List.of(
+                    "EMERGENCIA",
+                    "CLINICA_GERAL",
+                    "PEDIATRIA",
+                    "FARMACIA"
+            );
+            case HOSPITAL -> List.of(
+                    "EMERGENCIA",
+                    "CLINICA_GERAL",
+                    "PEDIATRIA",
+                    "ODONTOLOGIA"
+            );
+        };
     }
 }
