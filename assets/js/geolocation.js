@@ -260,6 +260,10 @@ function criarCard(unidade, indice) {
     const nomeUnidade = formatarNomeUnidade(unidade.nomeUnidade);
     const distancia = numeroValido(unidade.distanciaKm);
     const tempo = numeroValido(unidade.tempoEstimadoMinutos);
+    const espera = numeroValido(unidade.esperaEstimadaMinutos);
+    const equipe = unidade.equipeAtiva && typeof unidade.equipeAtiva === "object"
+        ? unidade.equipeAtiva
+        : null;
     const distanciaTexto = distancia === null ? "Não informada" : `${distancia.toFixed(2)} km`;
     const tempoTexto = tempo === null ? "Não informado" : `${Math.ceil(tempo)} min`;
     const nivelFila = normalizarNivelFila(unidade.nivelFila);
@@ -277,7 +281,11 @@ function criarCard(unidade, indice) {
     cabecalho.append(iconeUnidade, identidade);
 
     const detalhes = elemento("dl", "unidade-detalhes");
-    detalhes.append(criarDetalhe("Distância", distanciaTexto), criarDetalhe("Deslocamento estimado", tempoTexto));
+    detalhes.append(
+        criarDetalhe("Distância", distanciaTexto),
+        criarDetalhe("Deslocamento estimado", tempoTexto),
+        criarDetalhe("Espera estimada", espera === null ? "Não informada" : `${Math.ceil(espera)} min`)
+    );
     const fila = elemento("p", `fila-badge fila-${nivelFila.classe}`, nivelFila.texto);
     const acoes = elemento("div", "card-acoes");
     const botaoOuvir = elemento("button", "botao-ouvir");
@@ -292,8 +300,10 @@ function criarCard(unidade, indice) {
         }
         const distanciaFalada = distancia === null ? "não informada" : `${distancia.toFixed(2).replace(".", ",")} quilômetros`;
         const tempoFalado = tempo === null ? "não informado" : `${Math.ceil(tempo)} minutos`;
+        const esperaFalado = espera === null ? "não informada" : `${Math.ceil(espera)} minutos`;
         const texto = `${nomeUnidade}. Distância: ${distanciaFalada}. `
-            + `Tempo estimado: ${tempoFalado}. Fila de espera: ${nivelFila.fala}.`;
+            + `Deslocamento estimado: ${tempoFalado}. Espera estimada para atendimento: ${esperaFalado}. `
+            + `Fila de espera: ${nivelFila.fala}.`;
         lerEmVozAlta(texto, botaoOuvir);
     });
 
@@ -304,8 +314,32 @@ function criarCard(unidade, indice) {
     rota.setAttribute("aria-label", `Traçar rota para ${nomeUnidade} no Google Maps (nova aba)`);
     rota.append(criarIcone("rota"), elemento("span", "", "Traçar rota"));
     acoes.append(botaoOuvir, rota);
-    card.append(cabecalho, detalhes, fila, criarListaServicos(unidade), acoes);
+    card.append(cabecalho, detalhes, fila, criarEquipeAtiva(equipe), criarListaServicos(unidade), acoes);
     return card;
+}
+
+function criarEquipeAtiva(equipe) {
+    const secao = elemento("div", "equipe-ativa");
+    secao.append(elemento("h4", "", "Equipe em atividade"));
+    if (!equipe) {
+        secao.append(elemento("p", "equipe-vazia", "Não informado"));
+        return secao;
+    }
+
+    const lista = elemento("ul", "equipe-lista");
+    const itens = [
+        ["Recepção", equipe.recepcionistas],
+        ["Enfermagem", equipe.enfermeiros],
+        ["Médicos", equipe.medicos]
+    ];
+    itens.forEach(([rotulo, quantidade]) => {
+        const item = elemento("li");
+        item.append(elemento("span", "equipe-funcao", rotulo));
+        item.append(elemento("strong", "equipe-quantidade", numeroValido(quantidade) ?? "—"));
+        lista.append(item);
+    });
+    secao.append(lista, elemento("p", "dados-simulados", "Estimativa demonstrativa"));
+    return secao;
 }
 
 function normalizarNivelFila(nivel) {

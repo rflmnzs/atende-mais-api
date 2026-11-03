@@ -10,6 +10,8 @@ public record RecomendacaoResponseDTO(
         double distanciaKm,
         int tempoEstimadoMinutos,
         String nivelFila,
-        List<String> servicosDisponiveis
+        List<String> servicosDisponiveis,
+        int esperaEstimadaMinutos,
+        EquipeAtivaDTO equipeAtiva
 ) {
 }

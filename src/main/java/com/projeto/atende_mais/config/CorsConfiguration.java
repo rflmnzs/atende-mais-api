@@ -10,14 +10,16 @@ public class CorsConfiguration implements WebMvcConfigurer {
 
     private final String frontendUrl;
 
-    public CorsConfiguration(@Value("${FRONTEND_URL}") String frontendUrl) {
+    public CorsConfiguration(@Value("${FRONTEND_URL:*}") String frontendUrl) {
         this.frontendUrl = frontendUrl;
     }
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
-                .allowedOrigins(frontendUrl)
+                // O padrão "null" permite a execução local por file://, enquanto
+                // os padrões localhost atendem Live Server e outros servidores locais.
+                .allowedOriginPatterns(frontendUrl, "null", "http://localhost:[*]", "http://127.0.0.1:[*]")
                 .allowedMethods("GET", "POST", "OPTIONS");
     }
 }

@@ -1,6 +1,7 @@
 package com.projeto.atende_mais.service;
 
 import com.projeto.atende_mais.dto.RecomendacaoResponseDTO;
+import com.projeto.atende_mais.dto.EquipeAtivaDTO;
 import com.projeto.atende_mais.model.Espera;
 import com.projeto.atende_mais.model.Servico;
 import com.projeto.atende_mais.model.Unidade;
@@ -48,8 +49,33 @@ public class RecomendacaoService {
                 distanciaKm,
                 tempoEstimadoMinutos,
                 buscarNivelFilaAtual(unidade.getId()),
-                buscarServicosDisponiveis(unidade.getId())
+                buscarServicosDisponiveis(unidade.getId()),
+                estimarEsperaAtendimento(unidade),
+                estimarEquipeAtiva(unidade)
         );
+    }
+
+    /**
+     * Valores demonstrativos para a PoC. Não representam monitoramento oficial
+     * e não são persistidos no banco de dados.
+     */
+    private int estimarEsperaAtendimento(Unidade unidade) {
+        int variacao = Math.floorMod(unidade.getId().hashCode(), 16);
+        return switch (unidade.getTipo()) {
+            case UBS -> 15 + variacao;
+            case UPA -> 30 + variacao * 2;
+            case HOSPITAL -> 45 + variacao * 2;
+        };
+    }
+
+    /** Valores demonstrativos apenas para tornar a capacidade da unidade compreensível. */
+    private EquipeAtivaDTO estimarEquipeAtiva(Unidade unidade) {
+        int variacao = Math.floorMod(unidade.getId().hashCode(), 4);
+        return switch (unidade.getTipo()) {
+            case UBS -> new EquipeAtivaDTO(2 + variacao % 2, 2 + variacao, 1 + variacao % 2);
+            case UPA -> new EquipeAtivaDTO(3 + variacao % 2, 5 + variacao, 3 + variacao % 2);
+            case HOSPITAL -> new EquipeAtivaDTO(5 + variacao % 2, 10 + variacao, 6 + variacao % 2);
+        };
     }
 
     public double calcularDistancia(double lat1, double lon1, double lat2, double lon2) {

@@ -412,7 +412,7 @@ h1 {
 
 .unidade-detalhes {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1rem;
     margin: 1.125rem 0 0;
     padding-block: 0.875rem;
@@ -476,6 +476,61 @@ h1 {
 
 .servicos {
     margin-bottom: 1.125rem;
+}
+
+.equipe-ativa {
+    margin: 0 0 1.125rem;
+    padding: 0.875rem;
+    border: 1px solid #dfe9e4;
+    border-radius: 0.75rem;
+    background: #f7fbf9;
+}
+
+.equipe-ativa h4 {
+    margin: 0 0 0.625rem;
+    color: var(--cor-texto);
+    font-size: 0.8125rem;
+    font-weight: 700;
+}
+
+.equipe-lista {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.equipe-lista li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    min-width: 0;
+}
+
+.equipe-funcao {
+    color: var(--cor-texto-suave);
+    font-size: 0.7rem;
+    overflow-wrap: anywhere;
+}
+
+.equipe-quantidade {
+    color: var(--cor-primaria-escura);
+    font-size: 1.05rem;
+}
+
+.dados-simulados,
+.equipe-vazia {
+    margin: 0.625rem 0 0;
+    color: var(--cor-texto-suave);
+    font-size: 0.7rem;
+}
+
+@media (max-width: 30rem) {
+    .unidade-detalhes {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 .servicos h4 {
