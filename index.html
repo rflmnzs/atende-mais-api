@@ -4,19 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Encontre unidades da rede SUS em Diadema, consulte serviços e veja a distância até você.">
-    <meta name="theme-color" content="#08755b">
+    <meta name="theme-color" content="#1351b4">
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" type="image/png" href="assets/icons/icon-192.png">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
     <title>Atende+ | Atendimento perto de você</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/global.css">
 </head>
 <body>
+    <div class="barra-institucional">
+        <div class="conteudo-largura barra-institucional-conteudo">
+            <span>Prefeitura de Diadema</span>
+            <span>Serviço público digital</span>
+        </div>
+    </div>
     <div class="banner-aviso" role="alert">
-        ⚠️ <strong>AMBIENTE DE DEMONSTRAÇÃO (PoC):</strong> As unidades de saúde listadas são reais, mas fila, tempos, equipe em atividade e serviços exibidos são dados demonstrativos.
+        <div class="conteudo-largura"><strong>Ambiente de demonstração:</strong> as unidades são reais, mas fila, tempos, equipe em atividade e serviços exibidos são dados demonstrativos.</div>
     </div>
     <a class="pular-conteudo" href="#conteudo-principal">Ir para o conteúdo</a>
 
@@ -24,14 +30,14 @@
         <div class="conteudo-largura cabecalho-conteudo">
             <div class="identidade">
                 <a class="marca" href="./" aria-label="Atende+, página inicial">Atende<span>+</span></a>
-                <span class="marca-descricao">Orientação sobre a rede SUS</span>
+                <span class="marca-descricao">Rede municipal de saúde</span>
             </div>
             <span class="localidade">
                 <svg class="icone" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                     <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z" />
                     <circle cx="12" cy="10" r="2.5" />
                 </svg>
-                Diadema
+                <span>Diadema - SP</span>
             </span>
         </div>
     </header>
@@ -39,9 +45,9 @@
     <main id="conteudo-principal" class="conteudo-largura" tabindex="-1">
         <section class="apresentacao" aria-labelledby="titulo-principal">
             <div class="apresentacao-texto">
-                <p class="destaque">Sua saúde, mais perto</p>
-                <h1 id="titulo-principal">Encontre atendimento perto de você.</h1>
-                <p class="apresentacao-descricao">Consulte as unidades de saúde de Diadema, os serviços disponíveis, o tempo para chegar e uma estimativa de espera.</p>
+                <p class="destaque">Atendimento em saúde</p>
+                <h1 id="titulo-principal">Encontre uma unidade de saúde.</h1>
+                <p class="apresentacao-descricao">Consulte unidades da rede municipal de Diadema, serviços disponíveis, tempo de deslocamento e uma estimativa de espera.</p>
             </div>
 
             <div class="busca-acao">
@@ -53,7 +59,7 @@
                     </svg>
                     <span id="buscar-texto">Encontrar unidades próximas</span>
                 </button>
-                <p class="busca-ajuda">Permita o acesso à localização no navegador.</p>
+                <p class="busca-ajuda">A localização é usada somente para ordenar as unidades mais próximas.</p>
 
                 <div id="loading" class="loading" role="status" hidden>
                     <span class="spinner" aria-hidden="true"></span>
@@ -65,12 +71,15 @@
 
         <section class="resultados" aria-labelledby="titulo-resultados">
             <div class="resultados-cabecalho">
-                <h2 id="titulo-resultados">Unidades de saúde</h2>
+                <div>
+                    <p class="secao-kicker">Consulta de serviços</p>
+                    <h2 id="titulo-resultados">Unidades de saúde</h2>
+                </div>
                 <p id="resumo-resultados">Busque pela sua localização</p>
             </div>
 
             <div class="filtros-servico" role="group" aria-labelledby="titulo-filtros">
-                <p id="titulo-filtros">Filtrar por serviço</p>
+                <p id="titulo-filtros">Qual serviço você procura?</p>
                 <div class="filtros-lista">
                     <button class="filtro ativo" type="button" data-servico="" aria-pressed="true" aria-controls="resultado-container">Todos</button>
                     <button class="filtro" type="button" data-servico="PEDIATRIA" aria-pressed="false" aria-controls="resultado-container">Pediatria</button>
@@ -95,7 +104,7 @@
     </main>
 
     <footer class="rodape conteudo-largura">
-        <p>Atende+ <span aria-hidden="true">·</span> Orientação sobre a rede SUS em Diadema</p>
+        <p><strong>Atende+</strong> <span aria-hidden="true">·</span> Serviço demonstrativo de orientação sobre a rede municipal de saúde</p>
     </footer>
 
     <script type="module" src="assets/js/api-client.js"></script>
